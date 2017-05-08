@@ -25,16 +25,17 @@ def create_weight(nn_dim):
 
 def create_layer(x,weight,bias,activation):
     layer = tf.add(tf.matmul(x, weight), bias)
-    layer = tf.nn.relu(layer)
+    layer = tf.nn.tanh(layer)
     return layer
 
 def create_ffnn(nn_dim):
     w,b = create_weight(nn_dim)
     layer =[tf.placeholder("float",[None, nn_dim[0]])]
     y = tf.placeholder("float", [None, nn_dim[-1]])
-    for i in range(len(w)):
+    for i in range(len(w)-1):
         layer.append(create_layer(layer[-1],w['h'+str(i+1)],b['b'+str(i+1)],'t'))
-    return layer[-1], layer[0], y
+    out = tf.matmul(layer[-1], tf.Variable(tf.random_normal([nn_dim[-2],nn_dim[-1]])))
+    return out, layer[0], y, layer
 
 #w,b = create_weight(nn_dim)
 #input =tf.placeholder("float",[None, nn_dim[0]])
@@ -82,8 +83,11 @@ def nn_train(data,target,nnet,opts):
     # print("Accuracy:", accuracy.eval({x: mnist.test.images, y: mnist.test.labels}))
 
 
+pred, x, y, hidden = create_ffnn([10, 5, 2])
+
+
 if __name__ == '__main__':
-    #pred, x, y = create_ffnn(nn_dim)
+
         # cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
     #cost = tf.losses.mean_squared_error(y, pred)
     #optimizer = tf.train.AdamOptimizer(learning_rate=opts['learning_rate']).minimize(cost)
