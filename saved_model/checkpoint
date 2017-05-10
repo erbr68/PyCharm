@@ -1,0 +1,2 @@
+model_checkpoint_path: "OlfModel_1707_800_400_348_err=0.06.tf"
+all_model_checkpoint_paths: "OlfModel_1707_800_400_348_err=0.06.tf"
