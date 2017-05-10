@@ -2,7 +2,9 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 
-sess =tf.InteractiveSession()
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess =tf.InteractiveSession(config=config)
 
 def loadData(pth):
     data = pd.read_csv(pth + 'DATA.csv')
@@ -25,7 +27,7 @@ def create_weight(nn_dim):
 
 def create_layer(x,weight,bias,activation):
     layer = tf.add(tf.matmul(x, weight), bias)
-    layer = tf.nn.tanh(layer)
+    layer = tf.nn.dropout(tf.nn.tanh(layer),0.5)
     return layer
 
 def create_ffnn(nn_dim):

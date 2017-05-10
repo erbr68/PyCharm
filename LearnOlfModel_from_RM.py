@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[25]:
 
 #import tensorflow as tf
 import numpy as np
@@ -15,8 +15,8 @@ import ffnet
 #pth = "/Users/gvalmerbr/Downloads/Music/"
 pth = "./"
 
-get_ipython().magic(u'load_ext autoreload')
-get_ipython().magic(u'autoreload 2')
+#get_ipython().magic(u'load_ext autoreload')
+#get_ipython().magic(u'autoreload 2')
 
 
 # Read data:
@@ -45,6 +45,7 @@ opts = {'batch_size': 100,
 # In[4]:
 
 ffnet.tf.reset_default_graph
+saver =ffnet.tf.train.Saver()
 pred, x, y, hidden = ffnet.create_ffnn(nn_dim)
 
 
@@ -76,57 +77,20 @@ opts['training_epochs'] = 300
 tf = ffnet.nn_train(data,target,nnet,opts)
 
 
-# In[21]:
+# In[30]:
 
 d = data[:,:]
 p = pred.eval(feed_dict={x: d})
 
-c = cost.eval(feed_dict={x: d,y:target[:,:]})
-print("Cost = ",c)
+final_cost = cost.eval(feed_dict={x: d,y:target[:,:]})
+print("Cost = ",final_cost)
 print("max of pred = ",p.max())
 
 
-# In[ ]:
-
-ffnet.sess.run([hidden[1],hidden[2]],feed_dict={x: d})
-
-
-# In[22]:
-
-
-import matplotlib.pyplot as plt
-
-get_ipython().magic(u'matplotlib notebook')
-fig=plt.figure()
-h=plt.imshow(p,aspect='auto')
-fig.colorbar(h,orientation='vertical')
-print np.nonzero(p==p.max())
-
-
-# In[19]:
-
-r = pd.DataFrame(np.transpose(p[10000]),index=desc)
-print r.shape
-r.nlargest(18,0)
-
-
-# In[12]:
-
-r = pd.DataFrame(np.transpose(target[10000]),index=desc)
-print r.shape
-r.nlargest(3,0)
-
-
-# In[13]:
-
-col =ffnet.tf.get_collection(ffnet.tf.GraphKeys.TRAINABLE_VARIABLES)
-tf.get
-
-
-# In[ ]:
-
-for tensor in col:
-    print tensor
+s = 'OlfModel_' + '_'.join(str(d) for d in nn_dim) + '_err='+ '%.2f' % (final_cost)+'.tf'
+print "saving", s
+saver.save(ffnet.sess, "./saved_model/"+ s)
+print 'done'
 
 
 # In[ ]:
